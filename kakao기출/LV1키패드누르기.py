@@ -55,5 +55,3 @@ def solution(numbers, hand):
                 left = (px,py)
             
     return answer
-
-print(solution(num,han))
