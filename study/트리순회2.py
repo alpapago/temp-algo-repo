@@ -1,45 +1,49 @@
+import sys
+
+sys.setrecursionlimit(10**6)
+
 n = int(input())
-data = [[] for _ in range(n + 1)]
+tree = dict()
 
 for _ in range(n):
-    n, a, b = map(int, input().split(" "))
-    data[n].append(a)
-    data[n].append(b)
+    a, b, c = map(int, input().split(" "))
+    tree[a] = [b, c]
 
-visited = [0 for _ in range(n + 1)]
+visited = []
 ans = []
 pre = []
-last = 0
+mid = []
+cnt = 0
 
 
 def dfs(v):
-    global last
+    global cnt
+    visited.append(v)
+    cnt += 1
+    print(v, "11")
+    # leaf node
+    if tree[v][0] == -1 and tree[v][1] == -1:
+        if len(visited) != n:
 
-    if v == -1:
-        return
+            # cnt += 1
+            return
 
-    if not visited[v]:
-        visited[v] = 1
-        pre.append(v)
-        if len(pre) == n:
-            last = v
-        ans.append(v)
-        dfs(data[v][0])
-        if ans[-1] == last:
-            return
-        if ans[-1] != v:
-            ans.append(v)
-        dfs(data[v][1])
-        if ans[-1] == last:
-            return
-        if ans[-1] != v:
-            ans.append(v)
+    if tree[v][0] != -1:
+
+        cnt += 1
+        dfs(tree[v][0])
+        print(v, "333")
+
+    if tree[v][1] != -1:
+        cnt += 1
+
+        dfs(tree[v][1])
+        print(v, "444")
+
+    print(v, "222")
 
 
 dfs(1)
-print(ans, "ans")
+# print(ans)
 
-if ans:
-    print(len(ans) - 1)
-else:
-    print(0)
+print(cnt + 1)
