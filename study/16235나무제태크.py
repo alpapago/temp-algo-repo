@@ -3,19 +3,18 @@ import sys
 input = sys.stdin.readline
 
 n, m, k = map(int, input().split())
+
 # 양분
 arr = []
 for _ in range(n):
     tmp = list(map(int, input().split()))
     arr.append(tmp)
 
-# 나무에 나이별로 input
-trees = []
+trees = [[[] for _ in range(n)] for _ in range(n)]
+
 for _ in range(m):
     x, y, age = map(int, input().split())
-    trees.append([age, x - 1, y - 1])
-
-trees = sorted(trees, key=lambda x: x[0])
+    trees[age].append([x - 1, y - 1, 0])
 
 # 땅
 pan = [[5 for _ in range(n)] for _ in range(n)]
@@ -24,21 +23,20 @@ while k:
     k -= 1
 
     # 봄
-    tp = []
-    for i in range(len(trees)):
-        age, r, c = trees[i]
-        if r < 0 or c < 0:
-            continue
-        if pan[r][c] >= age:
-            # 나이만큼 양분먹고
-            pan[r][c] -= age
-            # 1살 더먹음
-            trees[i][0] = age + 1
-            # print(trees, "나이를 먹어야 하는데")
-        else:
-            # 여름에는 해당나무 죽어서 양분 됨
-            age = age // 2
-            pan[r][c] += age
+    for age in range(len(trees)):
+        for tree in range(len(trees[age])):
+            r, c, isUsed = trees[age]
+            isUsed = isUsed%2
+            if r < 0 or c < 0:
+                continue
+            if pan[r][c] >= age and not isUsed:
+                pan[r][c] -= age
+                # 1살 더먹음
+                trees[age + 1].append([r, c, isUsed+1])
+                # print(trees, "나이를 먹어야 하는데")
+            else:
+                # 여름에는 해당나무 죽어서 양분 됨
+                pan[r][c] += age//2
             # print(trees, "빠지기 전")
             trees[i][1] = -1
             trees[i][2] = -1
