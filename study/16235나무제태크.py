@@ -14,65 +14,69 @@ trees = [[[] for _ in range(n)] for _ in range(n)]
 
 for _ in range(m):
     x, y, age = map(int, input().split())
-    trees[age].append([x - 1, y - 1, 0])
+    trees[x-1][y-1].append(age)
 
 # 땅
 pan = [[5 for _ in range(n)] for _ in range(n)]
 
 while k:
     k -= 1
-
     # 봄
-    for age in range(len(trees)):
-        for tree in range(len(trees[age])):
-            r, c, isUsed = trees[age]
-            isUsed = isUsed%2
-            if r < 0 or c < 0:
+    for r in range(n):
+        for c in range(n):
+            tree = trees[r][c]
+            idx = 0
+            dead = []
+            if not tree:
                 continue
-            if pan[r][c] >= age and not isUsed:
-                pan[r][c] -= age
-                # 1살 더먹음
-                trees[age + 1].append([r, c, isUsed+1])
-                # print(trees, "나이를 먹어야 하는데")
-            else:
-                # 여름에는 해당나무 죽어서 양분 됨
-                pan[r][c] += age//2
-            # print(trees, "빠지기 전")
-            trees[i][1] = -1
-            trees[i][2] = -1
-            # print(trees, "잘빠지고있는건가")
-    # print(trees, "after sprint")
+            tree.sort()
+            for t in range(len(tree)):
+                t_age = tree[t]
+                if pan[r][c] >= t_age:
+                    pan[r][c] -= t_age
+                    trees[r][c][t] = t_age + 1
+                else:
+                    dead = tree[t:]
+                    trees[r][c] = tree[:t]
+                    break
+            for d in dead:
+                pan[r][c] += d//2          
+            
     # 가을
-    for i in range(len(trees)):
-        age, r, c = trees[i]
-        if not age % 5 and r >= 0 and c >= 0:
-            for dr, dc in [
-                (-1, -1),
-                (-1, 0),
-                (-1, +1),
-                (0, -1),
-                (0, +1),
-                (+1, -1),
-                (+1, 0),
-                (+1, +1),
-            ]:
-                nr = r + dr
-                nc = c + dc
-                if 0 > nr or 0 > nc or nr >= n or nc >= n:
-                    continue
-                trees.append([1, nr, nc])
-    # 새 나무 추가되고 sort
-    trees = sorted(trees, key=lambda x: x[0])
+    for r in range(n):
+        for c in range(n):
+            tree = trees[r][c]
+            if not tree:
+                continue
+            for t in range(len(tree)):
+                t_age = tree[t]
+                if t_age%5 == 0:
+                    for dr, dc in [
+                        (-1, -1),
+                        (-1, 0),
+                        (-1, +1),
+                        (0, -1),
+                        (0, +1),
+                        (+1, -1),
+                        (+1, 0),
+                        (+1, +1),
+                    ]:
+                        nr = r + dr
+                        nc = c + dc
+                        if 0 > nr or 0 > nc or nr >= n or nc >= n:
+                            continue
+                        trees[nr][nc].append(1)
     # 겨울
     for i in range(n):
         for j in range(n):
             pan[i][j] += arr[i][j]
-    # print(trees, "treeeeeeeeeeeeee")
-
+    
 # k년 지난 후 살아있는 나무 갯수
 ans = 0
-for i in range(len(trees)):
-    age, r, c = trees[i]
-    if r >= 0 and c >= 0:
-        ans += 1
+for r in range(n):
+    for c in range(n):
+        tree = trees[r][c]
+        if not tree:
+            continue
+        ans += len(tree)
 print(ans)
