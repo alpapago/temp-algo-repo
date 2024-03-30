@@ -5,5 +5,5 @@ n,q = map(int,input().split())
 gas = list(map(int,input().split()))
 
 for _ in range(q):
-    num = int(input())
-    
+
+num = int(input())
